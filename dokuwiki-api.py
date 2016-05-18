@@ -18,22 +18,14 @@ print wiki.version # => 'Release 2012-10-13 "Adora Belle"'
 print wiki.pages.list('geraetschaften:infrastruktur') # list all pages in the given namespace
 print wiki.pages.get('geraetschaften:infrastruktur:dymo') # print the content of the page
 
-# import xmlrpclib
-# import base64
-# from urllib import urlencode
-# from urllib2 import urlopen
-# from urllib2 import HTTPError
 
+with open('wiki-template.txt','r') as s:
+    template = s.read()
 
-# script = '/lib/exe/xmlrpc.php'
+wiki.pages.set('playground:neuerordner:inventartest',template)
+print wiki.pages.info('playground:neuerordner:inventartest')
+if wiki.pages.info('playground:neuerordner:inventartestttt'):
+    print "existiert"
+else:
+    print "existiert nicht"
 
-# print urlopen(baseurl + script +'?').read()
-
-# url = ''.join([ baseurl, script, '?',urlencode({'u': user, 'p':pw}) ])
-
-# xmlrpclib.Transport.user_agent = 'Thomas'
-# xmlrpclib.SafeTransport.user_agent = 'Thomas'
-
-# proxy = xmlrpclib.ServerProxy(url)
-
-# proxy.dokuwiki.getVersion()

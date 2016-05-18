@@ -1,0 +1,26 @@
+====== testing ======
+
+|**Inventarnummer**|g????|
+|Benutzbar für|Mitglieder/Jeder|
+|Einweisung benötigt|Ja/Nein|
+|Ort|???|
+|Eigentümer|Verein/#Eigentümer im Fall Dauerleihgabe#|
+
+===== Ansprechpartner =====
+
+  * ...
+
+{{ :logo.png?250}}
+
+===== Verbrauchsmaterial =====
+
+  * ...
+
+===== Dokumentation =====
+
+TODO
+
+===== Weiterführende Links =====
+
+  * ...
+
