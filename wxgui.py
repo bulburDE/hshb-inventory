@@ -20,13 +20,13 @@ class InvFrame(wx.Frame):
         self.TitleText = wx.TextCtrl(self, wx.ID_ANY)
 
         self.NewEntrySizer.Add(self.InventNumberStat, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
-        self.NewEntrySizer.Add(self.InventNumberText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
+        self.NewEntrySizer.Add(self.InventNumberText, 0, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
         self.NewEntrySizer.Add(self.TitleStat, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
-        self.NewEntrySizer.Add(self.TitleText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
+        self.NewEntrySizer.Add(self.TitleText, 0, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
 
         self.NewButton = wx.Button(self, wx.ID_ANY, _("Create new entry"))
 
-        self.NewEntryBoxSizer.Add(self.NewEntrySizer)
+        self.NewEntryBoxSizer.Add(self.NewEntrySizer, 1, wx.ALL|wx.EXPAND)
         self.NewEntryBoxSizer.Add(self.NewButton, 0, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
 
         self.OldEntryBox = wx.StaticBox(self, wx.ID_ANY, _("Existing Entries"))
@@ -52,10 +52,11 @@ class InvFrame(wx.Frame):
         self.OldEntryBoxSizer.Add(self.OldEntrySizer, 1, wx.ALL|wx.EXPAND)
         self.OldEntryBoxSizer.Add(self.ListButtonSizer, 0, wx.ALL|wx.EXPAND)
 
-        self.OverallSizer.Add(self.NewEntryBoxSizer, 0, wx.ALL|wx.EXPAND)
-        self.OverallSizer.Add(self.OldEntryBoxSizer, 1, wx.ALL|wx.EXPAND)
+        self.OverallSizer.Add(self.NewEntryBoxSizer, 0, wx.ALL|wx.EXPAND, 5)
+        self.OverallSizer.Add(self.OldEntryBoxSizer, 1, wx.ALL|wx.EXPAND, 5)
 
         self.SetSizer(self.OverallSizer)
+        self.NewEntrySizer.RecalcSizes()
         self.Show(True)
 
 gettext.install('hshb-inventory', './locale', unicode=True)
