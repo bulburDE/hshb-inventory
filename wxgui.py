@@ -2,6 +2,19 @@
 import sys
 import wx
 import gettext
+import getpass
+import InventoryItemList as Inv
+
+
+yourlsurl = 'http://hshb.de/yourls-api.php'
+with open('yourls-signature.txt','r') as s:
+    sig = s.read().strip()
+
+wikiurl = 'https://wiki.hackerspace-bremen.de'
+user = 'heth'
+pw = getpass.getpass('Passwort: ')
+
+inv = Inv.InventoryItemList(yourlsurl, sig, wikiurl, user, pw, "test.db")
 
 class InvFrame(wx.Frame):
     def __init__(self, parent, title):
@@ -36,6 +49,9 @@ class InvFrame(wx.Frame):
         self.EntryList = wx.ListCtrl(self, style=wx.LC_REPORT)
         self.EntryList.InsertColumn(0,_("Number"))
         self.EntryList.InsertColumn(1,_("Title"))
+        for item in inv.GetAllItems():
+            self.EntryList.Append(item)
+        self.EntryList.SetColumnWidth(1,wx.LIST_AUTOSIZE)
 
         self.ListButtonSizer = wx.BoxSizer(wx.VERTICAL)
 

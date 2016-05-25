@@ -15,7 +15,7 @@ except (dokuwiki.DokuWikiError, Exception) as err:
 
 print wiki.version # => 'Release 2012-10-13 "Adora Belle"'
 # print wiki.pages.list() # list all pages of the wiki
-print wiki.pages.list('geraetschaften:infrastruktur') # list all pages in the given namespace
+print wiki.pages.list('geraetschaften:3d') # list all pages in the given namespace
 print wiki.pages.get('geraetschaften:infrastruktur:dymo') # print the content of the page
 
 

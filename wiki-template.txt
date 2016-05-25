@@ -1,6 +1,6 @@
-====== testing ======
+====== %title% ======
 
-|**Inventarnummer**|g????|
+|**Inventarnummer**|%number%|
 |Benutzbar für|Mitglieder/Jeder|
 |Einweisung benötigt|Ja/Nein|
 |Ort|???|

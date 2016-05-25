@@ -22,7 +22,7 @@ class InventoryItemList:
 
         self.wiki = dokuwiki.DokuWiki(wikiurl, wikiuser, wikipw)
 
-    def Add(self, number):
+    def RetrieveItemInfo(self, number):
         shorturl = self.prefix + format(number, "04")
         print shorturl
         try:
@@ -57,6 +57,24 @@ class InventoryItemList:
     def NamespaceFromUrl(self, url):
         return ':'.join(url.split('/')[3:])
 
+    def GetAllItems(self):
+        self.dbcursor.execute("SELECT * FROM Inventory ORDER BY Number")
+        return self.dbcursor.fetchall()
+
+    def AddNewItem(self, number, title):
+        shorturl = self.prefix + format(number, "04")
+        try:
+            self.yourls.expand(shorturl)
+            urlexists = True
+        except:
+            urlexists = False
+        if not urlexists:
+            with open('wiki-template.txt','r') as s:
+                template = s.read()
+            template.replace("%title%", title)
+            template.replace("%number%", shorturl)
+            pass
+
 
 if __name__ == "__main__":
     yourlsurl = 'http://hshb.de/yourls-api.php'
@@ -68,7 +86,8 @@ if __name__ == "__main__":
     pw = getpass.getpass('Passwort: ')
 
     inv = InventoryItemList(yourlsurl, sig, wikiurl, user, pw, "test.db")
-    for i in range(1, 110):
-        inv.Add(i)
-    inv.Add(1234)
-    inv.Add(1235)
+    # for i in range(1, 110):
+    #     inv.RetrieveItemInfo(i)
+    # inv.RetrieveItemInfo(1234)
+    # inv.RetrieveItemInfo(1235)
+    print inv.GetAllItems()
