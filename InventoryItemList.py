@@ -12,12 +12,13 @@ import re
 class InventoryItemList:
     def __init__(self, yourlsurl, yourlssig, wikiurl, wikiuser, wikipw, dbname):
         self.prefix = "g"
+        self.wiki_basefolder = "geraetschaften"
         self.h1regex = re.compile("={6}\s(.+?)\s={6}")
         self.yourls = yourls.YOURLSClient(yourlsurl, signature=yourlssig)
         self.db = sqlite3.connect(dbname)
         self.dbcursor = self.db.cursor()
         self.dbcursor.execute("""CREATE TABLE IF NOT EXISTS Inventory 
-                              (Number INT UNIQUE NOT NULL, Title TEXT NOT NULL)""")
+                              (Number INT UNIQUE NOT NULL, Title TEXT NOT NULL, Folder TEXT)""")
         self.db.commit()
 
         self.wiki = dokuwiki.DokuWiki(wikiurl, wikiuser, wikipw)
@@ -32,15 +33,17 @@ class InventoryItemList:
             print "shorturl not found"
             return
         try:
-            pagename = self.NamespaceFromUrl(wikiurl)
+            (pagename, folder) = self.NamespaceFromUrl(wikiurl)
             print pagename
+            print folder
             if self.wiki.pages.info(pagename):
                 page = self.wiki.pages.get(pagename)
                 print page[:20]
             else:
                 raise
-        except:
+        except Exception as e:
             print "wiki url not well formed or page does not exist"
+            print e
             return
         try:
             title = self.h1regex.match(page).group(1)
@@ -49,20 +52,31 @@ class InventoryItemList:
             print "page title not found. wiki page not formated correctly."
             return
         try:    
-            self.dbcursor.execute("INSERT INTO Inventory VALUES (?, ?)", (number, title))
+            self.dbcursor.execute("INSERT INTO Inventory VALUES (?, ?, ?)", (number, title, folder))
             self.db.commit()
         except sqlite3.IntegrityError:
             print "adding failed, most likely entry already exists"
 
     def NamespaceFromUrl(self, url):
-        return ':'.join(url.split('/')[3:])
+        parts = url.split('/')[3:]
+        if len(parts) > 2:
+            folder = parts[1:-1]
+        else:
+            folder = []
+        print parts, folder
+        return (':'.join(parts), ':'.join(folder))
 
     def GetAllItems(self):
-        self.dbcursor.execute("SELECT * FROM Inventory ORDER BY Number")
+        self.dbcursor.execute("SELECT Number, Title FROM Inventory ORDER BY Number")
         return self.dbcursor.fetchall()
 
-    def AddNewItem(self, number, title):
+    def GetFolders(self):
+        self.dbcursor.execute("SELECT DISTINCT Folder FROM Inventory ORDER BY Folder")
+        return self.dbcursor.fetchall()
+
+    def AddNewItem(self, number, title, subfolder):
         shorturl = self.prefix + format(number, "04")
+        print_re = re.compile('[\W_]+')#, re.UNICODE)
         try:
             self.yourls.expand(shorturl)
             urlexists = True
@@ -71,9 +85,17 @@ class InventoryItemList:
         if not urlexists:
             with open('wiki-template.txt','r') as s:
                 template = s.read()
-            template.replace("%title%", title)
-            template.replace("%number%", shorturl)
-            pass
+            template = template.replace("%title%", title)
+            template = template.replace("%number%", shorturl)
+            wikified_title = print_re.sub("_", title).lower()
+            if wikified_title[-1] == "_":
+                wikified_title = wikified_title[:-1]
+            new_wiki_name = ":".join(["playground", self.wiki_basefolder, subfolder, wikified_title])
+            print new_wiki_name
+            if not self.wiki.pages.info(new_wiki_name):
+                self.wiki.pages.set(new_wiki_name, template)
+            else:
+                print "page ", new_wiki_name, "already exists"
 
 
 if __name__ == "__main__":
@@ -86,8 +108,9 @@ if __name__ == "__main__":
     pw = getpass.getpass('Passwort: ')
 
     inv = InventoryItemList(yourlsurl, sig, wikiurl, user, pw, "test.db")
-    # for i in range(1, 110):
-    #     inv.RetrieveItemInfo(i)
-    # inv.RetrieveItemInfo(1234)
-    # inv.RetrieveItemInfo(1235)
+    for i in range(1, 110):
+        inv.RetrieveItemInfo(i)
+    inv.RetrieveItemInfo(1234)
+    inv.RetrieveItemInfo(1235)
     print inv.GetAllItems()
+    print inv.GetFolders()
