@@ -54,8 +54,7 @@ class InvFrame(wx.Frame):
         self.EntryList = wx.ListCtrl(self, style=wx.LC_REPORT)
         self.EntryList.InsertColumn(0,_("Number"))
         self.EntryList.InsertColumn(1,_("Title"))
-        for item in inv.GetAllItems():
-            self.EntryList.Append(item)
+        self.UpdateItemList()
         self.EntryList.SetColumnWidth(1,wx.LIST_AUTOSIZE)
 
         self.ListButtonSizer = wx.BoxSizer(wx.VERTICAL)
@@ -85,6 +84,13 @@ class InvFrame(wx.Frame):
 
     def NewEntry(self, event):
         inv.AddNewItem(int(self.InventNumberText.GetValue()), self.TitleText.GetValue(), self.FolderCombo.GetValue())
+        self.UpdateItemList()
+
+    def UpdateItemList(self):
+        self.EntryList.DeleteAllItems()
+        for item in inv.GetAllItems():
+            self.EntryList.Append(item)
+
 
 gettext.install('hshb-inventory', './locale', unicode=True)
 

@@ -13,6 +13,7 @@ class InventoryItemList:
     def __init__(self, yourlsurl, yourlssig, wikiurl, wikiuser, wikipw, dbname):
         self.prefix = "g"
         self.wiki_basefolder = "geraetschaften"
+        self.wikiurl = wikiurl
         self.h1regex = re.compile("={6}\s(.+?)\s={6}")
         self.yourls = yourls.YOURLSClient(yourlsurl, signature=yourlssig)
         self.db = sqlite3.connect(dbname)
@@ -94,6 +95,10 @@ class InventoryItemList:
             print new_wiki_name
             if not self.wiki.pages.info(new_wiki_name):
                 self.wiki.pages.set(new_wiki_name, template)
+                new_wiki_url = "/".join([self.wikiurl, new_wiki_name.replace("::",":").replace(":","/")])
+                print new_wiki_url
+                self.yourls.shorten(new_wiki_url, shorturl)
+                self.RetrieveItemInfo(number)
             else:
                 print "page ", new_wiki_name, "already exists"
 
