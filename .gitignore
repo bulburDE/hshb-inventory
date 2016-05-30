@@ -107,4 +107,5 @@ tags
 
 yourls-signature.txt
 test.*
-g0001.png
+*.png
+*.pdf

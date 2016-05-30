@@ -5,6 +5,7 @@ import wx.lib.intctrl
 import gettext
 import getpass
 import InventoryItemList as Inv
+import InventoryLabelMaker as LM
 
 
 yourlsurl = 'http://hshb.de/yourls-api.php'
@@ -16,10 +17,11 @@ user = 'heth'
 pw = getpass.getpass('Passwort: ')
 
 inv = Inv.InventoryItemList(yourlsurl, sig, wikiurl, user, pw, "test.db")
+labelmaker = LM.InventoryLabelMaker()
 
 class InvFrame(wx.Frame):
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(400,300))
+        wx.Frame.__init__(self, parent, title=title, size=(450,700))
 
         self.OverallSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -79,6 +81,7 @@ class InvFrame(wx.Frame):
         self.NewEntrySizer.RecalcSizes()
 
         self.Bind(wx.EVT_BUTTON, self.NewEntry, self.NewButton)
+        self.Bind(wx.EVT_BUTTON, self.CreateLabel, self.CreateLabelButton)
 
         self.Show(True)
 
@@ -90,6 +93,16 @@ class InvFrame(wx.Frame):
         self.EntryList.DeleteAllItems()
         for item in inv.GetAllItems():
             self.EntryList.Append(item)
+
+    def CreateLabel(self, event):
+        item = self.EntryList.GetFirstSelected()
+        if item >= 0:
+            print "creating label for ", self.EntryList.GetItemText(item, 1)
+            labelmaker.MakeLabel(self.EntryList.GetItemText(item, 0), self.EntryList.GetItemText(item, 1))
+            while self.EntryList.GetNextSelected(item) >= 0:
+                item = self.EntryList.GetNextSelected(item)
+                print "creating label for ", self.EntryList.GetItemText(item, 1)
+                labelmaker.MakeLabel(self.EntryList.GetItemText(item, 0), self.EntryList.GetItemText(item, 1))
 
 
 gettext.install('hshb-inventory', './locale', unicode=True)
