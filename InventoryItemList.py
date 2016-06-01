@@ -56,7 +56,12 @@ class InventoryItemList:
             self.dbcursor.execute("INSERT INTO Inventory VALUES (?, ?, ?)", (number, title, folder))
             self.db.commit()
         except sqlite3.IntegrityError:
-            print "adding failed, most likely entry already exists"
+            print "adding failed, most likely entry already exists. trying to update"
+            try:
+                self.dbcursor.execute("UPDATE Inventory SET Title = ?, Folder = ? WHERE Number = ?", (title, folder, number)) 
+                self.db.commit()
+            except Exception as e:
+                print "Update failed"
 
     def NamespaceFromUrl(self, url):
         parts = url.split('/')[3:]

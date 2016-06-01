@@ -45,6 +45,7 @@ class InvFrame(wx.Frame):
         self.NewEntrySizer.Add(self.FolderCombo, 0, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
 
         self.NewButton = wx.Button(self, wx.ID_ANY, _("Create new entry"))
+        # self.NewButton.SetToolTipString(_("Creates a new Wiki-Entry, the shortlink and the label"))
 
         self.NewEntryBoxSizer.Add(self.NewEntrySizer, 1, wx.ALL|wx.EXPAND)
         self.NewEntryBoxSizer.Add(self.NewButton, 0, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
@@ -82,6 +83,8 @@ class InvFrame(wx.Frame):
 
         self.Bind(wx.EVT_BUTTON, self.NewEntry, self.NewButton)
         self.Bind(wx.EVT_BUTTON, self.CreateLabel, self.CreateLabelButton)
+        self.Bind(wx.EVT_BUTTON, self.IncrementalUpdate, self.IncrementalUpdateButton)
+        self.Bind(wx.EVT_BUTTON, self.CompleteUpdate, self.CompleteUpdateButton)
 
         self.Show(True)
 
@@ -103,6 +106,13 @@ class InvFrame(wx.Frame):
                 item = self.EntryList.GetNextSelected(item)
                 print "creating label for ", self.EntryList.GetItemText(item, 1)
                 labelmaker.MakeLabel(self.EntryList.GetItemText(item, 0), self.EntryList.GetItemText(item, 1))
+
+    def IncrementalUpdate(self, event):
+        pass
+
+    def CompleteUpdate(self, event):
+        for i in range(1, 10000):
+            inv.RetrieveItemInfo(i)
 
 
 gettext.install('hshb-inventory', './locale', unicode=True)
