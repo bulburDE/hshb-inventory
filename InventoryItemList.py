@@ -80,6 +80,11 @@ class InventoryItemList:
         self.dbcursor.execute("SELECT DISTINCT Folder FROM Inventory ORDER BY Folder")
         return self.dbcursor.fetchall()
 
+    def ExistsItem(self, number):
+        self.dbcursor.execute("SELECT count(*) FROM Inventory WHERE Number = ?", (number,))
+        count = self.dbcursor.fetchone()[0]
+        return count != 0
+
     def AddNewItem(self, number, title, subfolder):
         shorturl = self.prefix + format(number, "04")
         print_re = re.compile('[\W_]+')#, re.UNICODE)

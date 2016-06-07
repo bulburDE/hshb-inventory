@@ -108,7 +108,27 @@ class InvFrame(wx.Frame):
                 labelmaker.MakeLabel(self.EntryList.GetItemText(item, 0), self.EntryList.GetItemText(item, 1))
 
     def IncrementalUpdate(self, event):
-        pass
+        idx = 1
+        numEmpty = 0
+        found = False
+        pivotFound = False
+        while not found:
+            if inv.ExistsItem(idx):
+                if pivotFound:
+                    if numEmpty > 7:
+                        found = True
+                    else:
+                        pivotFound = False
+                        numEmpty = 0
+                else:
+                    idx += 10
+            else:
+                pivotFound = True
+                numEmpty += 1
+                idx -= 1
+        for i in range(idx + 1, idx + 12):
+            inv.RetrieveItemInfo(i)
+
 
     def CompleteUpdate(self, event):
         for i in range(1, 10000):
