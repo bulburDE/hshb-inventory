@@ -129,10 +129,17 @@ class InvFrame(wx.Frame):
         for i in range(idx + 1, idx + 12):
             inv.RetrieveItemInfo(i)
 
-
     def CompleteUpdate(self, event):
-        for i in range(1, 10000):
-            inv.RetrieveItemInfo(i)
+        dlg = wx.MessageDialog(self, 
+                               _("This may take a long time!"),
+                               _("Are you sure?"), wx.OK|wx.CANCEL|wx.ICON_QUESTION)
+        result = dlg.ShowModal()
+        dlg.Destroy()
+        if result == wx.ID_OK:
+            inv.ClearDB()
+            for i in range(1, 10000):
+                inv.RetrieveItemInfo(i)
+            self.UpdateItemList()
 
 
 gettext.install('hshb-inventory', './locale', unicode=True)

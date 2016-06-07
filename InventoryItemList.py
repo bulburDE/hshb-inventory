@@ -72,6 +72,9 @@ class InventoryItemList:
         print parts, folder
         return (':'.join(parts), ':'.join(folder))
 
+    def ClearDB(self):
+        self.dbcursor.execute("DELETE FROM Inventory")
+
     def GetAllItems(self):
         self.dbcursor.execute("SELECT Number, Title FROM Inventory ORDER BY Number")
         return self.dbcursor.fetchall()
