@@ -10,7 +10,10 @@ import re
 
 
 class InventoryItemList:
-    def __init__(self, yourlsurl, yourlssig, wikiurl, wikiuser, wikipw, dbname):
+    def __init__(self):
+        self.loggedIn = False
+
+    def Setup(self, yourlsurl, yourlssig, wikiurl, wikiuser, wikipw, dbname):
         self.prefix = "g"
         self.wiki_basefolder = "geraetschaften"
         self.wikiurl = wikiurl
@@ -125,7 +128,8 @@ if __name__ == "__main__":
     user = 'heth'
     pw = getpass.getpass('Passwort: ')
 
-    inv = InventoryItemList(yourlsurl, sig, wikiurl, user, pw, "test.db")
+    inv = InventoryItemList()
+    inv.Setup(yourlsurl, sig, wikiurl, user, pw, "test.db")
     for i in range(1, 110):
         inv.RetrieveItemInfo(i)
     inv.RetrieveItemInfo(1234)
