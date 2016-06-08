@@ -4,19 +4,29 @@ import wx
 import wx.lib.intctrl
 import gettext
 import getpass
+import ConfigParser
+import io
 import InventoryItemList as Inv
 import InventoryLabelMaker as LM
 
+default_config = """
+[yourls]
+yourlsurl = http://hshb.de/yourls-api.php
+signature = none
+[wiki]
+wikiurl = https://wiki.hackerspace-bremen.de
+user = user
+[db]
+dbfile = test.db
+"""
 
-yourlsurl = 'http://hshb.de/yourls-api.php'
-with open('yourls-signature.txt','r') as s:
-    sig = s.read().strip()
+inifile = "inventory.ini"
 
-wikiurl = 'https://wiki.hackerspace-bremen.de'
-user = 'heth'
-# pw = getpass.getpass('Passwort: ')
+Config = ConfigParser.ConfigParser()
+Config.readfp(io.BytesIO(default_config))
+Config.read(inifile)
 
-inv = Inv.InventoryItemList()#yourlsurl, sig, wikiurl, user, pw, "test.db"
+inv = Inv.InventoryItemList()
 labelmaker = LM.InventoryLabelMaker()
 
 class LoginDialog(wx.Dialog):
@@ -32,7 +42,7 @@ class LoginDialog(wx.Dialog):
         self.YourlsBox = wx.StaticBox(self, wx.ID_ANY, _("Yourls"))
         self.YourlsBoxSizer = wx.StaticBoxSizer(self.YourlsBox, wx.HORIZONTAL)
         self.YourlsSigLabel = wx.StaticText(self, wx.ID_ANY, _("Yourls Signature"))
-        self.YourlsSigText = wx.TextCtrl(self, wx.ID_ANY, sig)
+        self.YourlsSigText = wx.TextCtrl(self, wx.ID_ANY, Config.get("yourls", "signature"))
         self.YourlsBoxSizer.Add(self.YourlsSigLabel, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
         self.YourlsBoxSizer.Add(self.YourlsSigText, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
 
@@ -40,7 +50,7 @@ class LoginDialog(wx.Dialog):
         self.WikiBoxSizer = wx.StaticBoxSizer(self.WikiBox, wx.HORIZONTAL)
         self.WikiSizer = wx.GridSizer(2, 2, 5, 5)
         self.WikiUserLabel = wx.StaticText(self, wx.ID_ANY, _("Wiki Username"))
-        self.WikiUserText = wx.TextCtrl(self, wx.ID_ANY)
+        self.WikiUserText = wx.TextCtrl(self, wx.ID_ANY, Config.get("wiki", "user"))
         self.WikiSizer.Add(self.WikiUserLabel, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
         self.WikiSizer.Add(self.WikiUserText, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
         self.WikiPwLabel = wx.StaticText(self, wx.ID_ANY, _("Wiki Password"))
@@ -52,7 +62,7 @@ class LoginDialog(wx.Dialog):
         self.DBBox = wx.StaticBox(self, wx.ID_ANY, _("Database"))
         self.DBBoxSizer = wx.StaticBoxSizer(self.DBBox, wx.HORIZONTAL)
         self.DBLabel = wx.StaticText(self, wx.ID_ANY, _("DB Filename"))
-        self.DBText = wx.TextCtrl(self, wx.ID_ANY)
+        self.DBText = wx.TextCtrl(self, wx.ID_ANY, Config.get("db", "dbfile"))
         self.DBBoxSizer.Add(self.DBLabel, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
         self.DBBoxSizer.Add(self.DBText, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
 
@@ -69,7 +79,7 @@ class LoginDialog(wx.Dialog):
 
     def DoLogin(self, event):
         try:
-            inv.Setup(yourlsurl, self.YourlsSigText.GetValue(), wikiurl, self.WikiUserText.GetValue(), self.WikiPwText.GetValue(), self.DBText.GetValue())
+            inv.Setup(Config.get("yourls", "yourlsurl"), self.YourlsSigText.GetValue(), Config.get("wiki", "wikiurl"), self.WikiUserText.GetValue(), self.WikiPwText.GetValue(), self.DBText.GetValue())
         except:
             dlg = wx.MessageDialog(self, 
                                    _("Login not successful!"),
@@ -77,6 +87,11 @@ class LoginDialog(wx.Dialog):
             result = dlg.ShowModal()
             dlg.Destroy()
             return
+        Config.set("yourls", "signature", self.YourlsSigText.GetValue())
+        Config.set("wiki", "user", self.WikiUserText.GetValue())
+        Config.set("db", "dbfile", self.DBText.GetValue())
+        with open("inventory.ini", 'wb') as configfile:
+            Config.write(configfile)
         self.EndModal(wx.OK)
 
 class InvFrame(wx.Frame):
@@ -97,7 +112,7 @@ class InvFrame(wx.Frame):
         self.TitleText = wx.TextCtrl(self, wx.ID_ANY)
         self.TitleText.Disable()
         self.FolderStat = wx.StaticText(self, wx.ID_ANY, _("Subfolder"))
-        self.FolderCombo = wx.ComboBox(self, wx.ID_ANY)#self.FolderCombo.AppendItems([x[0] for x in inv.GetFolders()])
+        self.FolderCombo = wx.ComboBox(self, wx.ID_ANY)
         self.FolderCombo.Disable()
 
         self.NewEntrySizer.Add(self.InventNumberStat, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL)
@@ -123,7 +138,6 @@ class InvFrame(wx.Frame):
         self.EntryList = wx.ListCtrl(self, style=wx.LC_REPORT)
         self.EntryList.InsertColumn(0,_("Number"))
         self.EntryList.InsertColumn(1,_("Title"))
-        # self.UpdateItemList()
 
         self.ListButtonSizer = wx.BoxSizer(wx.VERTICAL)
 
