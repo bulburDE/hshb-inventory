@@ -107,7 +107,7 @@ class InventoryItemList:
             wikified_title = print_re.sub("_", title).lower()
             if wikified_title[-1] == "_":
                 wikified_title = wikified_title[:-1]
-            new_wiki_name = ":".join(["playground", self.wiki_basefolder, subfolder, wikified_title])
+            new_wiki_name = ":".join([self.wiki_basefolder, subfolder, wikified_title])
             print new_wiki_name
             if not self.wiki.pages.info(new_wiki_name):
                 self.wiki.pages.set(new_wiki_name, template)
