@@ -91,6 +91,11 @@ class InventoryItemList:
         count = self.dbcursor.fetchone()[0]
         return count != 0
 
+    def NumberOfItems(self):
+        self.dbcursor.execute("SELECT count(*) FROM Inventory")
+        count = self.dbcursor.fetchone()[0]
+        return count
+
     def AddNewItem(self, number, title, subfolder):
         shorturl = self.prefix + format(number, "04")
         print_re = re.compile('[\W_]+')#, re.UNICODE)
