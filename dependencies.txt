@@ -1,0 +1,5 @@
+wx
+yourls
+dokuwiki
+fpdf
+qrcode
