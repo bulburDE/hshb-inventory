@@ -195,6 +195,7 @@ class InvFrame(wx.Frame):
         self.UpdateItemList()
 
     def UpdateItemList(self):
+        print inv.NumberOfItems()
         self.EntryList.DeleteAllItems()
         for item in inv.GetAllItems():
             self.EntryList.Append(item)
@@ -215,22 +216,26 @@ class InvFrame(wx.Frame):
         numEmpty = 0
         found = False
         pivotFound = False
-        while not found:
-            if inv.ExistsItem(idx):
-                if pivotFound:
-                    if numEmpty > 7:
-                        found = True
+        if inv.NumberOfItems() > 0:
+            while not found:
+                if inv.ExistsItem(idx):
+                    if pivotFound:
+                        if numEmpty > 7:
+                            found = True
+                        else:
+                            pivotFound = False
+                            numEmpty = 0
                     else:
-                        pivotFound = False
-                        numEmpty = 0
+                        idx += 10
                 else:
-                    idx += 10
-            else:
-                pivotFound = True
-                numEmpty += 1
-                idx -= 1
+                    pivotFound = True
+                    numEmpty += 1
+                    idx -= 1
+        else:
+            idx = 0
         for i in range(idx + 1, idx + 12):
             inv.RetrieveItemInfo(i)
+        self.UpdateItemList()
 
     def CompleteUpdate(self, event):
         dlg = wx.MessageDialog(self, 
