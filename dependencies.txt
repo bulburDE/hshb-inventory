@@ -3,3 +3,4 @@ yourls
 dokuwiki
 fpdf
 qrcode
+pillow
