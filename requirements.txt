@@ -4,3 +4,4 @@ dokuwiki
 fpdf
 qrcode
 pillow
+docopt

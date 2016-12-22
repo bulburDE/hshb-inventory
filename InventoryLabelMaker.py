@@ -1,7 +1,17 @@
 # coding: utf-8
+"""LabelMaker
+
+Usage:
+  InventoryLabelMaker.py --number=<number> --title=<title>
+
+Options:
+  --number=<number>    the inventory number
+  --title=<title>      the title of the item
+"""
 
 from fpdf import FPDF
 import qrcode
+from docopt import docopt
 
 class InventoryLabelMaker:
     def __init__(self):
@@ -47,3 +57,8 @@ class InventoryLabelMaker:
 
         self.Label.output(self.PdfFileName)
 
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version='Naval Fate 2.0')
+    inventory_label_maker = InventoryLabelMaker()
+    inventory_label_maker.MakeLabel(arguments['--number'], arguments['--title'])
